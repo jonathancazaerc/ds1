@@ -1,9 +1,9 @@
 package ds1;
 
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -21,10 +21,15 @@ public class Client {
 	}
 	
 	public void pull(String s) {
+		System.out.println("Pulling file: " + s);
 		try {
-			Writer w = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-			w.append("abc");
+			BufferedWriter w = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+			w.append(s);
 			w.flush();
+			socket.shutdownOutput();
+			
+			DataInputStream r = new DataInputStream(socket.getInputStream());
+			System.out.print(r.readUTF());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
