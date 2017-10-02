@@ -1,9 +1,6 @@
 package ds1;
 
-import java.io.BufferedWriter;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -28,8 +25,22 @@ public class Client {
 			w.flush();
 			socket.shutdownOutput();
 			
+			String outputFile = "output-"+s;
+			
+			FileOutputStream fos = new FileOutputStream(outputFile);
+			BufferedOutputStream out = new BufferedOutputStream(fos);
+			byte[] buffer = new byte[1024];
+			int count;
+			InputStream in = socket.getInputStream();
+			while((count = in.read(buffer)) >= 0){
+				fos.write(buffer, 0, count);
+			}
+			fos.close();
+			socket.close();
+			
 			DataInputStream r = new DataInputStream(socket.getInputStream());
-			System.out.print(r.readUTF());
+			
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

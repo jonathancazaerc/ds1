@@ -1,9 +1,6 @@
 package ds1;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,6 +9,7 @@ import java.util.stream.Stream;
 
 public class Handler extends Thread {
 	Socket request;
+	private BufferedInputStream in;
 	
 	public Handler(Socket request) {
 		this.request = request;
@@ -31,23 +29,24 @@ public class Handler extends Thread {
 			Path path = Paths.get(fileName);
 
 			System.out.println("Writing file: " + s + "at (" + path.toAbsolutePath().toString() + ")");
+			
+			int count;
+			byte[] buffer = new byte[1024];
 
-			DataOutputStream w = new DataOutputStream(request.getOutputStream());
-
-			Stream<String> stream = Files.lines(path);
-			stream.forEach((String l) -> {
-				System.out.println(l);
-				try {
-					w.writeUTF(l);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			});
-			stream.close();		
-
+			OutputStream out = request.getOutputStream();
+			in = new BufferedInputStream(new FileInputStream(fileName));
+			while ((count = in.read(buffer)) > 0) {
+			     out.write(buffer, 0, count);
+			     out.flush();
+			}
+			
+			out.close();
+			System.out.println("File is transfered!");
 			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		
 	}
 }

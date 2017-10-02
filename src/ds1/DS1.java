@@ -10,12 +10,16 @@ public class DS1 {
 		if (args[0] == null) printUsage();
 		if (args[1] == null) printUsage();
 		if (args[0].equals("serve")) {
+			System.out.println("Serving mode...");
 			Server server;
-			if (args[1] == "tcp") {
+			if (args[1].equals("tcp")) {
+				System.out.println("TCP mode...");
 				server = new TCPServer();
-			} else if (args[1] == "udp") {
+			} else if (args[1].equals("udp")) {
+				System.out.println("UDP mode...");
 				server = new UDPServer();
 			} else {
+				System.out.println("Neither TCP nor UDP");
 				printUsage();
 				return;
 			}
