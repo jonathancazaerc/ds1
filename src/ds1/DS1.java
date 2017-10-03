@@ -25,7 +25,8 @@ public class DS1 {
 			}
 			server.start();
 		} else if (args[0].equals("pull")) {
-			Client client = new Client();
+//			Client client = new Client();
+			UDPClient client = new UDPClient(); //changed for UDP
 			client.pull(args[1]);
 		} else {
 			printUsage();

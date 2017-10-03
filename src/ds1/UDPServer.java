@@ -17,18 +17,19 @@ public class UDPServer implements Server {
 	}
 	
 	public void start() {
-		byte[] buffer = new byte[1000];
-		try {
-			DatagramPacket request = new DatagramPacket(buffer, buffer.length);
-			socket.receive(request);
-			DatagramPacket reply = new DatagramPacket(
-					request.getData(),
-					request.getLength(),
-					request.getAddress(),
-					request.getPort());
-			socket.send(reply);
-		} catch (IOException e) {
-			e.printStackTrace();
+		byte[] buffer = new byte[2048];
+		DatagramPacket request = new DatagramPacket(buffer, buffer.length);
+		while(true){
+			try {
+				socket.receive(request);
+				String s = new String(buffer,0,request.getLength());
+				System.out.println(s);
+				request.setLength(buffer.length);
+				//source: http://www.java2s.com/Code/Java/Network-Protocol/ReceiveUDPpockets.htm
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
