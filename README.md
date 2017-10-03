@@ -4,7 +4,11 @@
 Toggle the comments on line 28 and 29 of DS1.java
 
 ## TCP
-Inserted bufferedreader to send all kind of files. 
+Inserted bufferedreader to send all kind of files. Feel free to try with berlin.jpg:
+```bash
+java -jar ds1.jar serve udp #for the server
+java -jar ds1.jar pull berlin.jpg #for the client
+```
 
 ### Principle?
 
