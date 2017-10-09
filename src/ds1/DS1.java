@@ -25,19 +25,29 @@ public class DS1 {
 			}
 			server.start();
 		} else if (args[0].equals("pull")) {
-//			Client client = new Client();
-			UDPClient client = new UDPClient(); //changed for UDP
-			client.pull(args[1]);
+			Client client;
+			if (args[2] == null) printUsage();
+			if (args[1].equals("tcp")) {
+				client = new TCPClient();
+			} else if (args[1].equals("udp")){
+				client = new UDPClient(); //changed for UDP
+			} else {
+				System.out.println("Neither TCP nor UDP");
+				printUsage();
+				return;
+			}
+			client.pull(args[2]);
 		} else {
 			printUsage();
 		}
 	}
-	
+
 	static void printUsage() {
 		System.out.println("Usage:");
 		System.out.println("ds1 serve tcp");
 		System.out.println("ds1 serve udp");
-		System.out.println("ds1 pull file.txt");
+		System.out.println("ds1 pull tcp file.txt");
+		System.out.println("ds1 pull udp file.txt");
 	}
 
 }

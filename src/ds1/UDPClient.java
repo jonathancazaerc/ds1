@@ -8,20 +8,17 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-public class UDPClient {
-	
-	private DatagramSocket socket;
-	private InetAddress host;
-	private int port;
+public class UDPClient extends BaseClient implements Client {
+	DatagramSocket socket;
 
-	public UDPClient(){
+	public UDPClient() {
 			try {
-				host = InetAddress.getByName("localhost") ;
+				host = InetAddress.getByName("localhost");
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-	        port = 1234 ;
+	        port = 1234;
 			try {
 				socket = new DatagramSocket();
 			} catch (SocketException e) {
@@ -30,9 +27,10 @@ public class UDPClient {
 			}
 	}
 	
-	public void pull(String s){
-		byte [] data = s.getBytes() ;
-		DatagramPacket p = new DatagramPacket(data,data.length,host,port);
+	public void pull(String fileName){
+		byte[] buffer = new byte[(int) Math.pow(2, 12)];
+		int count;
+		DatagramPacket p = new DatagramPacket(buffer, buffer.length, host, port);
 		try {
 			socket.send(p);
 			socket.close();
@@ -41,7 +39,5 @@ public class UDPClient {
 			e.printStackTrace();
 		}
 	}
-	
-	
 
 }

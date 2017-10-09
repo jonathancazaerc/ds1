@@ -22,7 +22,7 @@ public class UDPServer implements Server {
 		while(true){
 			try {
 				socket.receive(request);
-				String s = new String(buffer,0,request.getLength());
+				String s = new String(buffer, 0, request.getLength());
 				System.out.println(s);
 				request.setLength(buffer.length);
 				//source: http://www.java2s.com/Code/Java/Network-Protocol/ReceiveUDPpockets.htm
