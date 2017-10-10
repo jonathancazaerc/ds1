@@ -2,6 +2,7 @@ package ds1;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,19 +29,25 @@ public class Handler extends Thread {
 			String fileName = "files/" + s ;
 			Path path = Paths.get(fileName);
 
-			System.out.println("Writing file: " + s + "at (" + path.toAbsolutePath().toString() + ")");
+			System.out.println("Writing file: " + s + " at (" + path.toAbsolutePath().toString() + ")");
 			
 			int count;
 			byte[] buffer = new byte[1024];
 
 			OutputStream out = request.getOutputStream();
-			in = new BufferedInputStream(new FileInputStream(fileName));
+			FileInputStream fis = new FileInputStream(fileName);
+			in = new BufferedInputStream(fis); 
+			
+			long fileSize = fis.getChannel().size();
+		    ByteBuffer fileSizeBuffer = ByteBuffer.allocate(Long.BYTES);
+		    fileSizeBuffer.putLong(fileSize);
+		    out.write(fileSizeBuffer.array(), 0, Long.BYTES);
+			
 			while ((count = in.read(buffer)) > 0) {
 			     out.write(buffer, 0, count);
 			     out.flush();
 			}
 			
-			out.close();
 			System.out.println("File is transfered!");
 			
 		} catch (IOException e) {

@@ -3,6 +3,7 @@ package ds1;
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 
 public class Client {
 	Socket socket;
@@ -32,14 +33,25 @@ public class Client {
 			byte[] buffer = new byte[1024];
 			int count;
 			InputStream in = socket.getInputStream();
+			byte[] fileSizeBuffer = new byte[Long.BYTES];
+			ByteBuffer fileSizeByteBuffer = ByteBuffer.wrap(fileSizeBuffer);
+			long fileSize = fileSizeByteBuffer.getLong();
+			
+		    in.read(fileSizeBuffer, 0, 8);
+		    
+		    long actualFileSize = 0;
+		    
 			while((count = in.read(buffer)) >= 0){
 				fos.write(buffer, 0, count);
+				actualFileSize += count;
 			}
 			fos.close();
 			socket.close();
 			
 			DataInputStream r = new DataInputStream(socket.getInputStream());
 			
+			if (actualFileSize != fileSize) System.out.print("Error file sizes are not equal: "+actualFileSize+" vs "+fileSize);
+			else System.out.println("File size:  OK");
 			
 		} catch (IOException e) {
 			e.printStackTrace();
