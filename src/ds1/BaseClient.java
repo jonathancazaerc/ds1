@@ -14,6 +14,8 @@ public class BaseClient {
 	Socket socket;
 	InetAddress host;
 	int port;
+	long expectedFileSize;
+	long actualFileSize;
 	
 	FileOutputStream getFileOutputStream(String fileName) throws FileNotFoundException {
 		String outputFile = "tmp/" + fileName;
@@ -24,42 +26,64 @@ public class BaseClient {
 	
 	void askFile(String fileName) throws IOException {
 		BufferedWriter w = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-		w.append(fileName);
+		w.append(fileName+"\n");
 		w.flush();
 		socket.shutdownOutput();
 	}
 	
+	/*
+	 * Sends the file name to the server, then reads the expected file size and
+	 * pipes the rest of the input stream to the file.
+	 */
 	public void pull(String fileName) {
 		System.out.println("Pulling file: " + fileName);
 		try {
-			askFile(fileName);
+			this.askFile(fileName);
 
 			FileOutputStream fos = getFileOutputStream(fileName);
 			InputStream in = socket.getInputStream();
 			
-			byte[] buffer = new byte[(int) Math.pow(2, 22)];
-			int count;
+			this.readExpectedFileSize(in);
+			this.readAndWriteFile(in, fos);
 			
-		    byte[] fileSizeBuffer = new byte[Long.BYTES];
-		    in.read(fileSizeBuffer, 0, 8);
-		    long fileSize = convertByteArrayToLong(fileSizeBuffer);
-		    long actualFileSize = 0;
-
-			while((count = in.read(buffer)) >= 0){
-				fos.write(buffer, 0, count);
-				actualFileSize += count;
-			}
-			
-			if (actualFileSize != fileSize) {
-				System.out.println("File size doesn't match: received " + fileSize + " vs " + actualFileSize);
-			}
 			fos.close();
 			socket.close();
+			
+			if (this.actualFileSize != this.expectedFileSize) {
+				System.out.println("File size doesn't match: received " + this.expectedFileSize + " vs " + this.actualFileSize);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
+	/*
+	 * Read expected byte size from the first 8 bytes from a stream
+	 */
+	void readExpectedFileSize(InputStream in) throws IOException {
+	    byte[] fileSizeBuffer = new byte[Long.BYTES];
+	    in.read(fileSizeBuffer, 0, 8);
+	    this.expectedFileSize = convertByteArrayToLong(fileSizeBuffer);
+	}
+	
+	/*
+	 * Pipes the in stream to the out stream until EOF, counting the size
+	 */
+	void readAndWriteFile(InputStream in, FileOutputStream fos) throws IOException {
+		byte[] buffer = new byte[(int) Math.pow(2, 22)];
+		int count;
+		
+	    long actualFileSize = 0;
+		while((count = in.read(buffer)) >= 0){
+			fos.write(buffer, 0, count);
+			actualFileSize += count;
+		}
+		this.actualFileSize = actualFileSize;
+	}
+	
+	/*
+	 * Converts a 8-byte byte array to long
+	 */
 	long convertByteArrayToLong(byte[] arr) {
 	    ByteBuffer b = ByteBuffer.allocate(Long.BYTES);
 	    b.put(arr);

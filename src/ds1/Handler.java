@@ -24,6 +24,7 @@ public class Handler extends Thread {
 		try {
 			BufferedReader r = new BufferedReader(new InputStreamReader(request.getInputStream()));
 			
+			System.out.println(r.readLine());
 			String s = r.readLine().replace("\n", "").replace("\r", "");
 
 			String fileName = "files/" + s ;
@@ -45,7 +46,7 @@ public class Handler extends Thread {
 		    
 		    System.out.println("File size: " + fileSize);
 
-			while ((count = in.read(buffer)) > 0) {
+			while ((count = in.read(buffer)) >= 0) {
 			    out.write(buffer, 0, count);
 			    out.flush();
 			}
@@ -55,7 +56,5 @@ public class Handler extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		
 	}
 }

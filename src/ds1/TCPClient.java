@@ -12,7 +12,6 @@ public class TCPClient extends BaseClient implements Client {
 		try {
 			host = InetAddress.getByName("localhost");
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         port = 1234;
