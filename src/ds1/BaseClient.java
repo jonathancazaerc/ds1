@@ -11,11 +11,11 @@ import java.net.Socket;
 import java.nio.ByteBuffer;
 
 public class BaseClient {
-	Socket socket;
-	InetAddress host;
-	int port;
-	long expectedFileSize;
-	long actualFileSize;
+	public Socket socket;
+	public InetAddress host;
+	public int port;
+	public long expectedFileSize;
+	public long actualFileSize;
 	
 	FileOutputStream getFileOutputStream(String fileName) throws FileNotFoundException {
 		String outputFile = "tmp/" + fileName;
@@ -26,7 +26,7 @@ public class BaseClient {
 	
 	void askFile(String fileName) throws IOException {
 		BufferedWriter w = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-		w.append(fileName+"\n");
+		w.append(fileName);
 		w.flush();
 		socket.shutdownOutput();
 	}
@@ -37,13 +37,13 @@ public class BaseClient {
 	 */
 	public void pull(String fileName) {
 		System.out.println("Pulling file: " + fileName);
-		try {
+		try {			
 			this.askFile(fileName);
-
-			FileOutputStream fos = getFileOutputStream(fileName);
-			InputStream in = socket.getInputStream();
 			
+			InputStream in = socket.getInputStream();
 			this.readExpectedFileSize(in);
+			
+			FileOutputStream fos = getFileOutputStream(fileName);
 			this.readAndWriteFile(in, fos);
 			
 			fos.close();

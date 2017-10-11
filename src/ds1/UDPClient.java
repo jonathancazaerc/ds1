@@ -1,10 +1,7 @@
 package ds1;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
@@ -17,9 +14,9 @@ public class UDPClient extends BaseClient implements Client {
 			} catch (UnknownHostException e) {
 				e.printStackTrace();
 			}
-	        port = 1234;
+	        port = Constants.UDP_PORT;
 			try {
-				socket = new DatagramSocket();
+				socket = new DatagramSocket(Constants.UDP_PORT);
 			} catch (SocketException e) {
 				e.printStackTrace();
 			}

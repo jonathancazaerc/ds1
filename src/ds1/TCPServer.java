@@ -5,11 +5,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class TCPServer implements Server {
-	private ServerSocket socket;
+	public ServerSocket socket;
 	
 	public TCPServer() {
 		try {
-			socket = new ServerSocket(1234);
+			socket = new ServerSocket(Constants.TCP_PORT);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -29,6 +29,6 @@ public class TCPServer implements Server {
 	}
 	
 	public void handleRequest(Socket request) {
-		new Handler(request).handle();
+		new Handler(request).run();
 	}
 }

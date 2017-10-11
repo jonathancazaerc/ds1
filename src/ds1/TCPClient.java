@@ -6,17 +6,15 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class TCPClient extends BaseClient implements Client {
-	Socket socket;
-
 	public TCPClient() {
 		try {
-			host = InetAddress.getByName("localhost");
+			this.host = InetAddress.getByName("localhost");
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
-        port = 1234;
+        port = Constants.TCP_PORT;
 		try {
-			socket = new Socket(host, port);
+			this.socket = new Socket(host, port);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
