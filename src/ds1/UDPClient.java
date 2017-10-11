@@ -2,6 +2,7 @@ package ds1;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.DatagramPacket;
@@ -33,10 +34,32 @@ public class UDPClient extends BaseClient {
 	    socket.send(packet);
 	}
 
-	public InputStream getInputStream() throws IOException {
-		byte[] buffer = new byte[(int) Math.pow(2, 22)];
+	public void finish() throws IOException {}
+
+	public void readExpectedFileSize() throws IOException {
+		byte[] buffer = new byte[8];
 		DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 		socket.receive(packet);
-		return new DataInputStream(new ByteArrayInputStream(packet.getData(), packet.getOffset(), packet.getLength()));
+		this.expectedFileSize = Util.convertByteArrayToLong(packet.getData());
+	}
+
+	public void readAndWriteFile(FileOutputStream fos) throws IOException {
+	    long actualFileSize = 0;
+		while(true) {
+			byte[] buffer = new byte[(int) Math.pow(2, 22)];		
+			DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+			socket.receive(packet);
+			
+			if (packet.getLength() == Constants.UDP_DONE_MESSAGE.length()) {
+				if (new String(packet.getData()).trim().equals(Constants.UDP_DONE_MESSAGE)) {
+					System.out.println("Done packet detected");
+					break;
+				}
+			}
+			
+			fos.write(packet.getData(), packet.getOffset(), packet.getLength());
+			actualFileSize += packet.getLength();
+		}
+		this.actualFileSize = actualFileSize;
 	}
 }

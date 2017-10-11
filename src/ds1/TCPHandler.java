@@ -27,6 +27,7 @@ public class TCPHandler extends BaseHandler {
 			FileInputStream fis = new FileInputStream(path.toAbsolutePath().toString());
 			BufferedInputStream bfis = new BufferedInputStream(fis);
 			long fileSize = fis.getChannel().size();
+			
 		    out.write(Util.convertLongToByteArray(fileSize), 0, Long.BYTES);
 		    
 		    System.out.println("File size: " + fileSize);
