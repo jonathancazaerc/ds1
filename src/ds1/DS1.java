@@ -25,7 +25,7 @@ public class DS1 {
 			}
 			server.start();
 		} else if (args[0].equals("pull")) {
-			Client client;
+			BaseClient client;
 			if (args[2] == null) printUsage();
 			if (args[1].equals("tcp")) {
 				client = new TCPClient();

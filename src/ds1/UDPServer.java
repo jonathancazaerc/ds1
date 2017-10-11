@@ -3,6 +3,7 @@ package ds1;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.Socket;
 import java.net.SocketException;
 
 public class UDPServer implements Server {
@@ -17,19 +18,20 @@ public class UDPServer implements Server {
 	}
 	
 	public void start() {
-		byte[] buffer = new byte[(int) Math.pow(2, 22)];
-		DatagramPacket request = new DatagramPacket(buffer, buffer.length);
-		while(true){
-			try {
-				socket.receive(request);
-				String s = new String(buffer, 0, request.getLength());
-				System.out.println(s);
-				request.setLength(buffer.length);
-				//source: http://www.java2s.com/Code/Java/Network-Protocol/ReceiveUDPpockets.htm
+		while(true) {
+			byte[] buffer = new byte[1024];
+			DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+            try {
+				socket.receive(packet);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			handleRequest(packet);
 		}
+	}
+	
+	public void handleRequest(DatagramPacket packet) {
+		new UDPHandler(socket, packet).handle();
 	}
 
 }

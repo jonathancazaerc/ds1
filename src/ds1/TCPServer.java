@@ -29,6 +29,6 @@ public class TCPServer implements Server {
 	}
 	
 	public void handleRequest(Socket request) {
-		new Handler(request).run();
+		new TCPHandler(request).handle();
 	}
 }

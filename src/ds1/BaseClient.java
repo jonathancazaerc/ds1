@@ -10,7 +10,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 
-public class BaseClient {
+public abstract class BaseClient {
 	public Socket socket;
 	public InetAddress host;
 	public int port;
@@ -24,12 +24,8 @@ public class BaseClient {
 		return fos;
 	}
 	
-	void askFile(String fileName) throws IOException {
-		BufferedWriter w = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-		w.append(fileName);
-		w.flush();
-		socket.shutdownOutput();
-	}
+	abstract public void requestFile(String filename) throws IOException;
+	abstract public InputStream getInputStream() throws IOException;
 	
 	/*
 	 * Sends the file name to the server, then reads the expected file size and
@@ -38,9 +34,9 @@ public class BaseClient {
 	public void pull(String fileName) {
 		System.out.println("Pulling file: " + fileName);
 		try {			
-			this.askFile(fileName);
+			this.requestFile(fileName);
 			
-			InputStream in = socket.getInputStream();
+			InputStream in = getInputStream();
 			this.readExpectedFileSize(in);
 			
 			FileOutputStream fos = getFileOutputStream(fileName);
@@ -63,7 +59,8 @@ public class BaseClient {
 	void readExpectedFileSize(InputStream in) throws IOException {
 	    byte[] fileSizeBuffer = new byte[Long.BYTES];
 	    in.read(fileSizeBuffer, 0, 8);
-	    this.expectedFileSize = convertByteArrayToLong(fileSizeBuffer);
+	    this.expectedFileSize = Util.convertByteArrayToLong(fileSizeBuffer);
+	    System.out.println(this.expectedFileSize);
 	}
 	
 	/*
@@ -80,14 +77,5 @@ public class BaseClient {
 		}
 		this.actualFileSize = actualFileSize;
 	}
-	
-	/*
-	 * Converts a 8-byte byte array to long
-	 */
-	long convertByteArrayToLong(byte[] arr) {
-	    ByteBuffer b = ByteBuffer.allocate(Long.BYTES);
-	    b.put(arr);
-	    b.flip();
-	    return b.getLong();		
-	}
+
 }
